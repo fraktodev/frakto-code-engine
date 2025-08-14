@@ -1,0 +1,12 @@
+# Dependencies
+**/node_modules/
+
+# Build output
+**/dist/
+
+# Build control files
+**/package-lock.json
+
+# System files
+**/.local
+**/.DS_Store

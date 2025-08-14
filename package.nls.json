@@ -1,0 +1,15 @@
+{
+	"description": "Universal bridge between VS Code and external formatting/linting engines.",
+	"command.title": "Correr diagnostico del archivo actual",
+	"config.title": "Frakto Code Engine Configuration",
+	"config.execPath.description": "Absolute path to the directory containing the external script for formatting and diagnostics.\n\nCan be set globally or overridden per language.",
+	"config.enableFormat.description": "Controls whether **Frakto Code Engine** should format the current file.\n\nCan be set globally or overridden per language.",
+	"config.enableDiagnostics.description": "Controls whether **Frakto Code Engine** should analyze the current file and display diagnostics.\n\nCan be set globally or overridden per language.",
+	"config.linterStandard.description": "Specifies the linter standard to use.\n\nCan be set globally or overridden per language.\n\nExamples: `eslint`, `phpcs`, `pylint`, etc.",
+	"config.maxExecTime.description": "Maximum time in milliseconds allowed for **Frakto Code Engine** to complete (formatting and/or diagnostics in a single run).\n\nIf the process takes longer, it will be terminated. Increase this value if your linter/formatter needs more time.",
+	"config.debounceTime.description": "Delay time in milliseconds before executing the external script after a document change.\n\nPrevents excessive executions while typing. Increase this value on slower systems or with large files to reduce CPU usage.",
+	"message.invalidJson": "Invalid JSON received from external script.\n{0}",
+	"message.invalidPayload": "Payload does not match the expected shape.\nReceived:\n{0}",
+	"message.analysisComplete": "Analysis completed successfully.",
+	"message.noActiveFile": "No active file to analyze."
+}
