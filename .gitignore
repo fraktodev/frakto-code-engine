@@ -3,6 +3,7 @@
 
 # Build output
 **/dist/
+frakto-code-engine-1.0.0.vsix
 
 # Build control files
 **/package-lock.json
