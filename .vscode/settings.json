@@ -20,5 +20,12 @@
 		"titleBar.inactiveForeground": "#e7e7e799"
 	},
 	"peacock.color": "#7c4dff",
+
+	// Copilot settings
+	"chat.instructionsFilesLocations": {
+		".github/copilot-instructions.md": true
+	},
+
+	// Spell checker settings
 	"cSpell.words": ["docblocks", "Docblocks", "frakto"]
 }
