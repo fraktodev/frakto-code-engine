@@ -8,6 +8,7 @@
 	"config.linterStandard.description": "Especifica el estándar de linter a utilizar. \n\nPuede establecerse globalmente o sobrescribirse por lenguaje. \n\nEjemplos: `eslint`, `phpcs`, `pylint`, etc.",
 	"config.maxExecTime.description": "Tiempo máximo en milisegundos permitido para que **Frakto Code Engine** finalice (formateo y/o diagnóstico en una sola ejecución).\n\nSi el proceso tarda más, se interrumpirá. Aumenta este valor si tu linter/formatter necesita más tiempo.",
 	"config.debounceTime.description": "Tiempo de espera en milisegundos antes de ejecutar el script externo después de un cambio en el documento.\n\nEsto evita ejecuciones excesivas mientras se escribe. Aumenta este valor en sistemas más lentos o con archivos grandes para reducir el uso de CPU.",
+	"message.scriptFailed": "El script falló con el código {0}.",
 	"message.invalidJson": "JSON inválido recibido del script externo.\n{0}",
 	"message.invalidPayload": "El contenido recibido no coincide con la forma esperada.\nRecibido:\n{0}",
 	"message.analysisComplete": "Análisis completado correctamente.",

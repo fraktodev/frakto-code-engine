@@ -1,5 +1,5 @@
 // Dependencies.
-import { execFile } from 'child_process';
+import { spawn } from 'child_process';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -184,10 +184,12 @@ const runExternal = async (
 	range?: vscode.Range
 ): Promise<vscode.TextEdit[] | void> => {
 	return new Promise((resolve, reject) => {
+		let stdout = '';
+		let stderr = '';
 		const execPath = getOverridableConfig('execPath', document);
 		const content = range ? document.getText(range) : document.getText();
 		const payload = buildRequestPayload(mode, content, document);
-		const pathToFile = [path.join(execPath, 'index.js')];
+		const pathToFile = path.join(execPath, 'index.js');
 		const options = {
 			maxBuffer: maxExecTime,
 			cwd: execPath,
@@ -196,17 +198,31 @@ const runExternal = async (
 				FRAKTO_PAYLOAD: JSON.stringify(payload)
 			}
 		};
-		const callback = async (error: Error | null, stdout: string, stderr: string) => {
-			// Handle errors from the external script
-			if (error) {
-				showMessage(error.message || stderr);
-				return reject(error);
+		const child = spawn('node', [pathToFile], options);
+		
+		child.stdout.on('data', (data) => {
+			stdout += data.toString();
+		});
+
+		child.stderr.on('data', (data) => {
+			stderr += data.toString();
+		});
+
+		child.on('close', (code) => {
+			// Handle errors from the external script.
+			if (code !== 0) {
+				showMessage(stderr || localize(
+						'message.scriptFailed',
+						'Script failed with code {0}.',
+						code
+					));
+				return reject(new Error(stderr || `Exit code ${code}`));
 			}
 
-			// Parse the JSON output from the external script
-			let payload: unknown;
+			// Parse the JSON output from the external script.
+			let parsed: unknown;
 			try {
-				payload = JSON.parse(stdout || 'null');
+				parsed = JSON.parse(stdout || 'null');
 			} catch (error: any) {
 				showMessage(
 					localize(
@@ -218,8 +234,8 @@ const runExternal = async (
 				return reject(new Error('Invalid JSON from external script'));
 			}
 
-			// Validate the structure of the payload
-			if (!isValidResponsePayload(payload)) {
+			// Validate the structure of the response.
+			if (!isValidResponsePayload(parsed)) {
 				showMessage(
 					localize(
 						'message.invalidPayload',
@@ -230,19 +246,19 @@ const runExternal = async (
 				return reject(new Error('Invalid payload shape'));
 			}
 
-			// Debug
-			if (payload.debug) {
-				console.log(payload.debug);
+			// Debug log
+			if (parsed.debug) {
+				console.log(parsed.debug);
 			}
 
 			// Handle formatting edits and diagnostics
 			if (mode === 'both') {
-				const newText = payload.formatted;
+				const newText = parsed.formatted;
 				const editRange = range || new vscode.Range(document.positionAt(0), document.positionAt(content.length));
 				const edits = typeof newText === 'string' ? [vscode.TextEdit.replace(editRange, newText)] : [];
 
-				if (Array.isArray(payload.diagnostics)) {
-					publishDiagnostics(payload.diagnostics, document);
+				if (Array.isArray(parsed.diagnostics)) {
+					publishDiagnostics(parsed.diagnostics, document);
 				}
 
 				return resolve(edits);
@@ -250,18 +266,14 @@ const runExternal = async (
 
 			// Handle diagnostics
 			if (mode === 'lint') {
-				if (Array.isArray(payload.diagnostics)) {
-					publishDiagnostics(payload.diagnostics, document);
+				if (Array.isArray(parsed.diagnostics)) {
+					publishDiagnostics(parsed.diagnostics, document);
 				}
 				return resolve();
 			}
 
-			// Fallback
 			return resolve();
-		};
-
-		const child = execFile('node', pathToFile, options, callback);
-		child.stdin?.end();
+		});
 	});
 };
 
