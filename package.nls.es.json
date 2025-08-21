@@ -1,0 +1,12 @@
+{
+	"description": "Universal external formatter/diagnostics bridge.",
+	"command.title": "Run a diagnostic on the current file",
+	"config.execFile.description": "Ruta absoluta al archivo que contiene el script externo para formateo y diagnóstico. \nPuede establecerse globalmente o sobrescribirse por lenguaje.",
+	"config.enableFormat.description": "Controla si debe formatear el archivo actual. \nPuede establecerse globalmente o sobrescribirse por lenguaje.",
+	"config.enableDiagnostics.description": "Controla si debe analizar el archivo actual y mostrar diagnósticos. \nPuede establecerse globalmente o sobrescribirse por lenguaje.",
+	"config.linterStandard.description": "Especifica el estándar de linter a utilizar. \nPuede establecerse globalmente o sobrescribirse por lenguaje. \nEjemplos: `eslint`, `phpcs`, `pylint`, etc.",
+	"config.ignores.description": "Lista de patrones glob que serán ignorados antes de enviar archivos al motor de análisis o formato. Usa patrones estilo .gitignore.",
+	"config.supportedLanguages.description": "Lista de lenguajes soportados por Frakto Code Engine.",
+	"config.maxBuffer.description": "Tamaño máximo de salida (en bytes) permitido durante una sola ejecución. Si se supera, el proceso será detenido automáticamente. \nAumenta este valor si tus herramientas generan mucha salida.",
+	"config.debounceTime.description": "Tiempo de espera en milisegundos antes de ejecutar el linter en el script externo tras un cambio en el documento. \nEvita ejecuciones excesivas mientras se escribe. Aumenta este valor en sistemas lentos o con archivos grandes para reducir el uso de CPU. \nEstablece en 0 para desactivar esta función por completo."
+}

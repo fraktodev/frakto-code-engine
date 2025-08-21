@@ -1,0 +1,9 @@
+{
+	"Frakto: No execution path configured. Please check your settings.": "Frakto: No se ha configurado la ruta de ejecución. Por favor, revisa tu configuración.",
+	"Script failed with code {code}.": "El script falló con el código {code}.",
+	"Invalid JSON received from external script.\n{error}": "JSON inválido recibido del script externo.\n{error}",
+	"Payload does not match the expected shape. Received:\n{stdout}": "El contenido recibido no coincide con la forma esperada. Recibido:\n{stdout}",
+	"Analysis completed successfully.": "Análisis completado correctamente.",
+	"Frakto: No supported languages configured. Please check your settings.": "Frakto: No hay lenguajes compatibles configurados. Por favor, revisa tu configuración.",
+	"Frakto: No active file to analyze.": "Frakto: No hay un archivo activo para analizar."
+}

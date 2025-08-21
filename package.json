@@ -1,0 +1,156 @@
+{
+	"name": "frakto-code-engine",
+	"displayName": "Frakto Code Engine",
+	"version": "1.0.0",
+	"description": "%description%",
+	"homepage": "https://frakto.dev",
+	"author": "Frakto Team",
+	"license": "MIT",
+	"keywords": [
+		"lint",
+		"linter",
+		"formatter",
+		"code quality",
+		"diagnostics",
+		"custom linting",
+		"universal linter",
+		"external script",
+		"style checker",
+		"code analyzer",
+		"multi-language",
+		"frakto"
+	],
+	"bugs": {
+		"url": "https://github.com/fraktodev/frakto-code-engine/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/fraktodev/frakto-code-engine.git"
+	},
+	"main": "extension.js",
+	"type": "commonjs",
+	"scripts": {
+		"build": "webpack --mode production",
+		"clean": "rimraf extension.* *.vsix",
+		"vscode:package": "npm run vscode:prepublish && vsce package",
+		"vscode:prepublish": "npm run clean && npm run build",
+		"watch": "webpack --mode development --watch"
+	},
+	"dependencies": {
+		"minimatch": "^10.0.3"
+	},
+	"devDependencies": {
+		"@types/node": "^24.2.1",
+		"@types/vscode": "^1.85.0",
+		"@vscode/vsce": "^3.6.0",
+		"rimraf": "^6.0.1",
+		"ts-loader": "^9.5.2",
+		"typescript": "^5.0.0",
+		"webpack": "^5.101.2",
+		"webpack-cli": "^6.0.1"
+	},
+	"engines": {
+		"vscode": "^1.90.0"
+	},
+	"publisher": "frakto",
+	"icon": "icon.png",
+	"galleryBanner": {
+		"color": "#2D3A78",
+		"theme": "dark"
+	},
+	"categories": [
+		"Formatters",
+		"Linters",
+		"Other"
+	],
+	"l10n": "/l10n",
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "frakto.runDiagnostics",
+				"title": "%command.title%",
+				"category": "Frakto"
+			}
+		],
+		"configuration": {
+			"title": "Frakto Code Engine",
+			"properties": {
+				"frakto.execFile": {
+					"type": "string",
+					"description": "%config.execFile.description%",
+					"default": "",
+					"scope": "language-overridable"
+				},
+				"frakto.enableFormat": {
+					"type": "boolean",
+					"default": true,
+					"description": "%config.enableFormat.description%",
+					"scope": "language-overridable"
+				},
+				"frakto.enableDiagnostics": {
+					"type": "boolean",
+					"default": true,
+					"description": "%config.enableDiagnostics.description%",
+					"scope": "language-overridable"
+				},
+				"frakto.linterStandard": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": null,
+					"markdownDescription": "%config.linterStandard.description%",
+					"scope": "language-overridable"
+				},
+				"frakto.ignores": {
+					"type": "array",
+					"description": "%config.ignores.description%",
+					"default": [
+						"**/node_modules/**",
+						"**/vendor/**",
+						"**/dist/**"
+					]
+				},
+				"frakto.supportedLanguages": {
+					"type": "array",
+					"description": "%config.supportedLanguages.description%",
+					"default": [
+						"javascript",
+						"typescript",
+						"javascriptreact",
+						"typescriptreact",
+						"html",
+						"css",
+						"scss",
+						"less",
+						"json",
+						"jsonc",
+						"markdown",
+						"php",
+						"xml",
+						"yaml",
+						"toml",
+						"sql",
+						"shellscript",
+						"bash",
+						"python",
+						"ruby"
+					]
+				},
+				"frakto.maxBuffer": {
+					"type": "number",
+					"default": 1048576,
+					"description": "%config.maxBuffer.description%"
+				},
+				"frakto.debounceTime": {
+					"type": "number",
+					"default": 2000,
+					"description": "%config.debounceTime.description%"
+				}
+			}
+		}
+	}
+}

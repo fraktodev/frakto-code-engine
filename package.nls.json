@@ -1,0 +1,12 @@
+{
+	"description": "Puente universal entre VS Code y motores externos de formateo/linting.",
+	"command.title": "Correr diagnostico del archivo actual",
+	"config.execFile.description": "Absolute path to the file containing the external script for formatting and diagnostics.\nCan be set globally or overridden per language.",
+	"config.enableFormat.description": "Controls whether should format the current file. \nCan be set globally or overridden per language.",
+	"config.enableDiagnostics.description": "Controls whether should analyze the current file and display diagnostics. \nCan be set globally or overridden per language.",
+	"config.linterStandard.description": "Specifies the linter standard to use. \nCan be set globally or overridden per language. \nExamples: `eslint`, `phpcs`, `pylint`, etc.",
+	"config.ignores.description": "List of glob patterns to be ignored before sending files to the formatting or analysis engine. Uses .gitignore-style patterns.",
+	"config.supportedLanguages.description": "List of languages supported by Frakto Code Engine.",
+	"config.maxBuffer.description": "Maximum amount of output (in bytes) allowed from the formatter or linter. If the process produces more than this, it will be terminated. \nIncrease this value for large files or verbose tools.",
+	"config.debounceTime.description": "Delay time in milliseconds before executing the linter on external script after a document change. \nPrevents excessive executions while typing. Increase this value on slower systems or with large files to reduce CPU usage. \nSet to 0 to disable this feature entirely."
+}
