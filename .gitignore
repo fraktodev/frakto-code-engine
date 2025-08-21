@@ -2,6 +2,6 @@
 **/dist/
 **/package-lock.json
 **/*.vsix
-**/extension.*
+**/extension.js*
 **/.local
 **/.DS_Store
