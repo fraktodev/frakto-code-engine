@@ -1,12 +1,17 @@
 // Dependencies
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Declarations
+const fileName = fileURLToPath(import.meta.url);
+const dirName  = path.dirname(fileName);
 
 // Export
 export default {
 	target: 'node',
 	entry: './src/extension.mts',
 	output: {
-		path: path.resolve(path.dirname(new URL(import.meta.url).pathname)),
+		path: path.resolve(dirName),
 		filename: 'extension.js',
 		libraryTarget: 'commonjs2',
 		devtoolModuleFilenameTemplate: '[resource-path]'

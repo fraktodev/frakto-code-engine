@@ -6,6 +6,7 @@
 	"homepage": "https://frakto.dev",
 	"author": "Frakto Team",
 	"license": "MIT",
+	"type": "commonjs",
 	"keywords": [
 		"lint",
 		"linter",
@@ -28,7 +29,6 @@
 		"url": "https://github.com/fraktodev/frakto-code-engine.git"
 	},
 	"main": "extension.js",
-	"type": "commonjs",
 	"scripts": {
 		"build": "webpack --mode production",
 		"clean": "rimraf extension.* *.vsix",
