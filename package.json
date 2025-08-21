@@ -52,7 +52,7 @@
 	"engines": {
 		"vscode": "^1.90.0"
 	},
-	"publisher": "frakto",
+	"publisher": "fraktodev",
 	"icon": "icon.png",
 	"galleryBanner": {
 		"color": "#2D3A78",
