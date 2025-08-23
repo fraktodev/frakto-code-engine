@@ -10,7 +10,7 @@ const fraktoConfig       = vscode.workspace.getConfiguration('frakto');
 const ignores            = fraktoConfig.get<string[]>('ignores') ?? [];
 const supportedLanguages = fraktoConfig.get<string[]>('supportedLanguages') ?? [];
 const maxBuffer          = fraktoConfig.get<number>('maxBuffer') ?? 1048576;
-const debounceTime       = fraktoConfig.get<number|0>('debounceTime') ?? 1000;
+const debounceTime       = fraktoConfig.get<number | 0>('debounceTime') ?? 1000;
 
 // Globals
 const channel    = vscode.window.createOutputChannel('Frakto Code Engine');
@@ -18,8 +18,10 @@ const diagnostic = vscode.languages.createDiagnosticCollection('Frakto');
 
 // Definitions
 type RunMode = 'format' | 'lint' | 'both';
+type EventType = 'onStart' | 'onOpen' | 'onChange' | 'onRunDiagnostic' | 'onFormat';
 interface RequestPayload {
 	mode: RunMode;
+	trigger: EventType;
 	language: string;
 	content: string;
 	linterStandard: string | null;
@@ -36,7 +38,7 @@ interface RequestPayload {
 interface ResponsePayload {
 	formatted: string | null;
 	diagnostics: DiagnosticPayload[] | null;
-	debug: any;
+	debug?: any;
 }
 interface DiagnosticPayload {
 	line: number;
@@ -73,12 +75,19 @@ const getOverridableConfig = (key: string, document: vscode.TextDocument): any =
  * diagnostics, or both, depending on the selected mode.
  *
  * @param mode     - Execution mode indicating whether to run formatting, diagnostics, or both.
+ * @param trigger  - The event that triggered the execution.
  * @param content  - Text content to process; can be full document or a selected range.
  * @param document - The VS Code text document from which the content and metadata are derived.
  */
-const buildRequestPayload = (mode: RunMode, content: string, document: vscode.TextDocument): RequestPayload => {
+const buildRequestPayload = (
+	mode: RunMode,
+	trigger: EventType,
+	content: string,
+	document: vscode.TextDocument
+): RequestPayload => {
 	return {
 		mode,
+		trigger: trigger,
 		language: document.languageId,
 		content: content,
 		linterStandard: getOverridableConfig('linterStandard', document),
@@ -104,9 +113,14 @@ const isValidResponsePayload = (possiblePayload: unknown): possiblePayload is Re
 		return false;
 	}
 
-	const keys         = Object.keys(possiblePayload);
-	const expectedKeys = ['formatted', 'diagnostics', 'debug'];
-	if (keys.length !== expectedKeys.length || !expectedKeys.every((k) => keys.includes(k))) {
+	const keys           = Object.keys(possiblePayload);
+	const requiredKeys   = ['formatted', 'diagnostics'];
+	const optionalKeys   = ['debug'];
+
+	const hasAllRequired = requiredKeys.every((k) => keys.includes(k));
+	const hasOnlyAllowed = keys.every((k) => [...requiredKeys, ...optionalKeys].includes(k));
+
+	if (!hasAllRequired || !hasOnlyAllowed) {
 		return false;
 	}
 
@@ -137,7 +151,7 @@ const isValidResponsePayload = (possiblePayload: unknown): possiblePayload is Re
 				);
 			}));
 
-	return isFormattedValid && isDiagnosticsValid && 'undefined' !== typeof payload.debug;
+	return isFormattedValid && isDiagnosticsValid;
 };
 
 /**
@@ -158,11 +172,13 @@ const isIgnored = (filePath: string, patterns: string[]): boolean => {
  * Runs the external linter/formatter script with document content or a range, sending a payload and handling results.
  *
  * @param mode     - The operation mode.
+ * @param trigger  - The event that triggered the execution.
  * @param document - The VS Code text document to process.
  * @param range    - Optional. The range to process; if omitted, processes the whole document.
  */
 const runExternal = async (
 	mode: RunMode,
+	trigger: EventType,
 	document: vscode.TextDocument,
 	range?: vscode.Range
 ): Promise<vscode.TextEdit[] | void> => {
@@ -178,7 +194,7 @@ const runExternal = async (
 		let stderr = '';
 
 		const content = range ? document.getText(range) : document.getText();
-		const payload = buildRequestPayload(mode, content, document);
+		const payload = buildRequestPayload(mode, trigger, content, document);
 		const options = {
 			maxBuffer: maxBuffer,
 			cwd: path.dirname(execFile),
@@ -235,17 +251,7 @@ const runExternal = async (
 				console.log(parsed.debug);
 			}
 
-			// Handle formatting edits and diagnostics
-			if ('both' === mode) {
-				const newText   = parsed.formatted;
-				const editRange = range || new vscode.Range(document.positionAt(0), document.positionAt(content.length));
-				const edits     = 'string' === typeof newText ? [vscode.TextEdit.replace(editRange, newText)] : [];
-
-				publishDiagnostics(parsed.diagnostics, document);
-				return resolve(edits);
-			}
-
-			// Handle formatting edits
+			// Handle formatting
 			if ('format' === mode) {
 				const newText   = parsed.formatted;
 				const editRange = range || new vscode.Range(document.positionAt(0), document.positionAt(content.length));
@@ -260,6 +266,16 @@ const runExternal = async (
 				return resolve();
 			}
 
+			// Handle formatting and diagnostics
+			if ('both' === mode) {
+				const newText   = parsed.formatted;
+				const editRange = range || new vscode.Range(document.positionAt(0), document.positionAt(content.length));
+				const edits     = 'string' === typeof newText ? [vscode.TextEdit.replace(editRange, newText)] : [];
+
+				publishDiagnostics(parsed.diagnostics, document);
+				return resolve(edits);
+			}
+
 			return resolve();
 		});
 	});
@@ -271,37 +287,22 @@ const runExternal = async (
  *
  * @param document - The VS Code text document to process.
  * @param range    - Optional. The range to process; if omitted, formats the whole document.
- *
- * @throws {void} If the external formatter fails or returns invalid output.
  */
 const runFormat = async (document: vscode.TextDocument, range?: vscode.Range): Promise<vscode.TextEdit[]> => {
-	if (false === getOverridableConfig('enableFormat', document) || isIgnored(document.uri.fsPath, ignores)) {
-		return [];
-	}
-
-	try {
-		const mode  = false === getOverridableConfig('enableDiagnostics', document) ? 'format' : 'both';
-		const edits = (await runExternal(mode, document, range)) as vscode.TextEdit[] | void;
-		return Array.isArray(edits) ? edits : [];
-	}
-	catch {
-		return [];
-	}
+	const mode = false === getOverridableConfig('enableDiagnostics', document) ? 'format' : 'both';
+	return (await runExternal(mode, 'onFormat', document, range)) as vscode.TextEdit[];
 };
 
 /**
  * Analyzes a document for issues and publishes diagnostics to VS Code.
  * Runs the external diagnostic process and updates the diagnostic collection.
  *
+ * @param trigger  - The event that triggered the execution.
  * @param document - The VS Code text document to process.
  * @param message  - Optional. If true, shows an information message upon completion.
  */
-const runDiagnostic = async (document: vscode.TextDocument, message?: boolean): Promise<void> => {
-	if (false === getOverridableConfig('enableDiagnostics', document) || isIgnored(document.uri.fsPath, ignores)) {
-		return;
-	}
-
-	await runExternal('lint', document).finally(() => {
+const runDiagnostic = async (trigger: EventType, document: vscode.TextDocument, message?: boolean): Promise<void> => {
+	await runExternal('lint', trigger, document).finally(() => {
 		if (message) {
 			vscode.window.setStatusBarMessage(vscode.l10n.t('Analysis completed successfully.'), 3000);
 		}
@@ -383,6 +384,32 @@ const throwError = (message: string): void => {
 };
 
 /**
+ * Determines whether a document should be processed by the extension.
+ *
+ * @param document - The VS Code text document to check.
+ * @param check    - The enable option to check.
+ */
+const shouldProcessDocument = (document: vscode.TextDocument, check: string): boolean => {
+	if (false === getOverridableConfig(check, document)) {
+		return false;
+	}
+
+	if (isIgnored(document.uri.fsPath, ignores)) {
+		return false;
+	}
+
+	if ('file' !== document.uri.scheme) {
+		return false;
+	}
+
+	if (!supportedLanguages.includes(document.languageId)) {
+		return false;
+	}
+
+	return true;
+};
+
+/**
  * Entry point for the Frakto lint extension.
  * Registers formatting and diagnostic providers for supported languages,
  * sets up output channels, and manages extension lifecycle events.
@@ -401,40 +428,52 @@ export const activate = (context: vscode.ExtensionContext): void => {
 
 	// Run diagnostics for already open documents
 	vscode.workspace.textDocuments.forEach((document) => {
-		if (supportedLanguages.includes(document.languageId)) {
-			runDiagnostic(document);
+		if (!shouldProcessDocument(document, 'enableDiagnostics')) {
+			return;
 		}
+
+		runDiagnostic('onStart', document);
 	});
 
 	// Register run diagnostics command
 	context.subscriptions.push(
 		vscode.commands.registerCommand('frakto.runDiagnostics', () => {
 			const editor = vscode.window.activeTextEditor;
+
 			if (!editor) {
 				vscode.window.showWarningMessage(vscode.l10n.t('Frakto: No active file to analyze.'));
 				return;
 			}
-			if (supportedLanguages.includes(editor.document.languageId)) {
-				runDiagnostic(editor.document, true);
+
+			if (!shouldProcessDocument(editor.document, 'enableDiagnostics')) {
+				return;
 			}
+
+			runDiagnostic('onRunDiagnostic', editor.document, true);
 		})
 	);
 
 	// Register event listeners
 	context.subscriptions.push(
 		vscode.workspace.onDidOpenTextDocument((document) => {
-			if (supportedLanguages.includes(document.languageId)) {
-				runDiagnostic(document);
+			if (!shouldProcessDocument(document, 'enableDiagnostics')) {
+				return;
 			}
+
+			runDiagnostic('onOpen', document);
 		}),
 		vscode.workspace.onDidChangeTextDocument((event) => {
-			if (0 === debounceTime || !supportedLanguages.includes(event.document.languageId) || 1 > event.contentChanges.length) {
+			if (
+				!shouldProcessDocument(event.document, 'enableDiagnostics') ||
+				0 === debounceTime ||
+				1 > event.contentChanges.length
+			) {
 				return;
 			}
 
 			clearTimeout(changeTimeout);
 			changeTimeout = setTimeout(() => {
-				runDiagnostic(event.document);
+				runDiagnostic('onChange', event.document);
 			}, debounceTime);
 		})
 	);
@@ -444,11 +483,19 @@ export const activate = (context: vscode.ExtensionContext): void => {
 		context.subscriptions.push(
 			vscode.languages.registerDocumentFormattingEditProvider(language, {
 				provideDocumentFormattingEdits(document) {
+					if (!shouldProcessDocument(document, 'enableFormat')) {
+						return [];
+					}
+
 					return runFormat(document);
 				}
 			}),
 			vscode.languages.registerDocumentRangeFormattingEditProvider(language, {
 				provideDocumentRangeFormattingEdits(document, range) {
+					if (!shouldProcessDocument(document, 'enableFormat')) {
+						return [];
+					}
+
 					return runFormat(document, range);
 				}
 			})

@@ -5,7 +5,7 @@
   <br>
   <strong>Frakto Code Engine</strong>
   <p><em>Fragment. Optimize. Reconstruct.</em></p>
-  <img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.1.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/VSCode-%5E1.90.0-blue.svg" alt="VS Code">
   <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="License">
   <img src="https://img.shields.io/badge/Prs-welcome-brightgreen.svg" alt="Contributions welcome">
@@ -65,6 +65,7 @@ Frakto will send the following structured object:
 ```ts
 interface RequestPayload {
   mode: 'format' | 'lint' | 'both';
+  trigger: 'onStart' | 'onOpen' | 'onChange' | 'onRunDiagnostic' | 'onFormat';
   language: string;
   content: string;
   linterStandard: string | null;
@@ -97,7 +98,7 @@ Your script must return a valid JSON with this structure:
 interface ResponsePayload {
   formatted: string | null;
   diagnostics: DiagnosticPayload[] | null;
-  debug: any;
+  debug?: any;
 }
 interface DiagnosticPayload {
   line: number;
@@ -146,10 +147,11 @@ The response from the external script will be handled as follows:
 
 - **`diagnostics`**
   These are used to run lint-style diagnostics on the code. Diagnostics are triggered:
+  - after formatting a document,
+  - when VSCode opens with documents already open,
   - when a document is opened,
-  - when it is edited,
-  - after formatting,
-  - and when running the command `Frakto: Run a diagnostic on the current file`.
+  - when a document is edited,
+  - when running the command `Frakto: Run a diagnostic on the current file`.
 
 - **`debug`**
   Any value returned here will be sent to the VS Code developer console using `console.log()`.
@@ -166,8 +168,10 @@ Make sure to follow our [contributing guidelines](https://github.com/fraktodev/f
 
 MIT License — Copyright © 2025 [Frakto](https://github.com/fraktodev/)
 
-## Funding
+## Support this project
 
-This project is maintained with love and dedication.  
-If you'd like to support its continued development, you can do so here:  
+This project is maintained with love and dedication. If you find it helpful, please consider:
+
+[![Leave a Review](https://img.shields.io/badge/Leave-a_Review-blue?style=flat&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=frakto.frakto-code-engine&ssr=false#review-details)
+[![Star on GitHub](https://img.shields.io/badge/Star-on_GitHub-black?style=flat&logo=github)](https://github.com/fraktodev/frakto-code-engine)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-%E2%98%95-yellow.svg?style=flat)](https://coff.ee/danybranding)

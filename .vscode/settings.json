@@ -1,6 +1,6 @@
 {
 	// Frakto Code Engine
-	"frakto.ignores": ["**/node_modules/**", "**/LICENSE", "**/extension.*"],
+	"frakto.ignores": ["**/node_modules/**", "**/LICENSE", "**/extension.js*"],
 
 	// Window color customization
 	"workbench.colorCustomizations": {
@@ -30,5 +30,18 @@
 	},
 
 	// Spell checker settings
-	"cSpell.words": ["docblocks", "Docblocks", "frakto", "fraktodev", "github", "milisegundos", "phpcs", "pylint", "yoda"]
+	"cSpell.words": [
+		"docblocks",
+		"Docblocks",
+		"erlang",
+		"frakto",
+		"fraktodev",
+		"github",
+		"kotlin",
+		"matlab",
+		"milisegundos",
+		"phpcs",
+		"pylint",
+		"yoda"
+	]
 }
