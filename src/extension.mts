@@ -1,8 +1,8 @@
 // Dependencies
-import { spawn } from 'child_process';
-import { minimatch } from 'minimatch';
 import * as path from 'path';
 import * as vscode from 'vscode';
+import { spawn } from 'child_process';
+import { minimatch } from 'minimatch';
 
 // Configs
 const fraktoConfig       = vscode.workspace.getConfiguration('frakto');
@@ -189,6 +189,12 @@ const runExternal = async (
 		return;
 	}
 
+	/**
+	 * Handles the output from the external script.
+	 *
+	 * @param resolve - The promise resolve function.
+	 * @param reject  - The promise reject function.
+	 */
 	return new Promise((resolve, reject) => {
 		let stdout = '';
 		let stderr = '';
@@ -200,7 +206,7 @@ const runExternal = async (
 			cwd: path.dirname(execFile),
 			env: {
 				...process.env,
-				// eslint-disable-next-line
+
 				FRAKTO_PAYLOAD: JSON.stringify(payload)
 			}
 		};
@@ -247,7 +253,7 @@ const runExternal = async (
 
 			// Debug log
 			if (parsed.debug) {
-				// eslint-disable-next-line
+				// eslint-disable-next-line no-console
 				console.log(parsed.debug);
 			}
 

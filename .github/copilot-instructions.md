@@ -35,7 +35,7 @@ The assistant must propose and implement **elegant, maintainable, and scalable**
 - Interpret tasks as a senior engineer would
 - Make reasonable assumptions and clearly state them
 - Call out ambiguities, risks, or incomplete instructions
-- When formatting, follow project rules precisely — especially docblocks, spacing, and property order
+- Never insert code into the editor, unless specifically requested by the developer.
 
 ## Emoji policy
 
@@ -78,7 +78,7 @@ Multiple types can be combined in a single commit message, separated by commas:
 docs: update README.md, fix: corrected button alignment, feat: added dark mode toggle
 ```
 
-Do **not** use capital letters, parentheses, or colons within the type (e.g., avoid `Feat(...)` or `feat():`).
+Do **not** use capital letters, parentheses, or colons within the type (e.g., avoid `Feat(...)` or `feat():`) and keep messages short, if needed longer, use commit body.
 
 #### Allowed commit type
 

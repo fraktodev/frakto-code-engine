@@ -1,0 +1,32 @@
+name: Release Template
+description: >
+  This release focuses on [insert key focus: stability, performance, new features, cleanup, etc.].
+
+body: |
+  ### Features (Only if applies)
+  - [Feature 1: short description of what was added and why]
+  - [Feature 2: optional context or impacted modules]
+
+  ### Improvements (Only if applies)
+  - [Code refactor, dependency upgrade, performance enhancement]
+  - [UI/UX adjustments, content or copy tweaks]
+
+  ### Bug Fixes (Only if applies)
+  - [#issue-id] Fixed a bug where [describe the problem]
+  - [#issue-id] Prevented [undesired behavior] in [component/module]
+
+  ### Technical Notes (Only if applies)
+  - Updated dependencies: [e.g., React 18, Electron 28]
+  - New environment variable: `MY_ENV_VAR` (default: `false`)
+  - Moved [file/module] to [new path or structure]
+
+  ---
+
+  ### Migration Notes (Only if applies)
+  - [Any breaking changes, deprecations, or manual steps required]
+
+  ---
+
+  ### Internal
+
+  - **Full Changelog**: <URL>

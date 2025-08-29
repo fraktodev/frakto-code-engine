@@ -5,7 +5,7 @@
   <br>
   <strong>Frakto Code Engine</strong>
   <p><em>Fragment. Optimize. Reconstruct.</em></p>
-  <img src="https://img.shields.io/badge/version-1.1.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/VSCode-%5E1.90.0-blue.svg" alt="VS Code">
   <img src="https://img.shields.io/badge/License-MIT-brightgreen.svg" alt="License">
   <img src="https://img.shields.io/badge/Prs-welcome-brightgreen.svg" alt="Contributions welcome">
@@ -172,6 +172,7 @@ MIT License — Copyright © 2025 [Frakto](https://github.com/fraktodev/)
 
 This project is maintained with love and dedication. If you find it helpful, please consider:
 
-[![Leave a Review](https://img.shields.io/badge/Leave-a_Review-blue?style=flat&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=frakto.frakto-code-engine&ssr=false#review-details)
-[![Star on GitHub](https://img.shields.io/badge/Star-on_GitHub-black?style=flat&logo=github)](https://github.com/fraktodev/frakto-code-engine)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-%E2%98%95-yellow.svg?style=flat)](https://coff.ee/danybranding)
+[![Leave a Review](https://img.shields.io/badge/Leave-a_Review-4A90E2?style=flat&logo=visualstudiocode)](https://marketplace.visualstudio.com/items?itemName=frakto.frakto-code-engine&ssr=false#review-details)
+[![Star on GitHub](https://img.shields.io/badge/GitHub-Star-4A90E2?style=flat&logo=github)](https://github.com/fraktodev/frakto-code-engine)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me-a%20Coffee-E67E22.svg?logo=buymeacoffee&logoColor=white)](https://coff.ee/danybranding)
+[![Become a Sponsor](https://img.shields.io/badge/GitHub-Sponsor-8B5CF6?style=flat&logo=github)](https://github.com/sponsors/danybranding)
